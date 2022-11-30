@@ -43,14 +43,35 @@
 </template>
 
 <script>
+
+  import { ref } from "vue"
+
   export default {
-    data() {
+
+    /* composition*/
+
+    setup() {
+
+      const width = ref(4)
+      const depth = ref(2)
+      const height = ref(4)
+
+      return {
+        width,
+        depth,
+        height
+      }
+    },
+
+    /* option */
+
+    /*data() {
       return {
         width: 4,
         depth: 2,
         height: 4
       }
-    },
+    },*/
     computed: {
       structure() {
         return [
@@ -87,7 +108,7 @@
         else if (value >= 6) this.depth = 6
       },
       height(value) {
-        if (value <= 1) this.height = 1
+        if (value <= 1) this.height = 2
         else if (value >= 6) this.height = 6
       }
     }
