@@ -1,28 +1,30 @@
 <template>
 
+  <div class="center"/>
+
   <form class="form">
     <div class="form-group">
-      <label class="form-label">width</label>
+      <label class="form-label" v-text="'width'"/>
       <div class="form-input">
-        <div class="form-input-block number">{{ width }}</div>
-        <button class="form-input-block button plus" @click.prevent="width++">+</button>
-        <button class="form-input-block button minus" @click.prevent="width--">-</button>
+        <div class="form-input-block number" v-text="width"/>
+        <button class="form-input-block button plus" @click.prevent="width++" v-text="'+'"/>
+        <button class="form-input-block button minus" @click.prevent="width--" v-text="'-'"/>
       </div>
     </div>
     <div class="form-group">
-      <label class="form-label">depth</label>
+      <label class="form-label" v-text="'depth'"/>
       <div class="form-input">
-        <div class="form-input-block number">{{ depth }}</div>
-        <button class="form-input-block button plus" @click.prevent="depth++">+</button>
-        <button class="form-input-block button minus" @click.prevent="depth--">-</button>
+        <div class="form-input-block number" v-text="depth"/>
+        <button class="form-input-block button plus" @click.prevent="depth++" v-text="'+'"/>
+        <button class="form-input-block button minus" @click.prevent="depth--" v-text="'-'"/>
       </div>
     </div>
     <div class="form-group">
-      <label class="form-label">height</label>
+      <label class="form-label" v-text="'height'"/>
       <div class="form-input">
-        <div class="form-input-block number">{{ height }}</div>
-        <button class="form-input-block button plus" @click.prevent="height++">+</button>
-        <button class="form-input-block button minus" @click.prevent="height--">-</button>
+        <div class="form-input-block number" v-text="height"/>
+        <button class="form-input-block button plus" @click.prevent="height++" v-text="'+'"/>
+        <button class="form-input-block button minus" @click.prevent="height--" v-text="'-'"/>
       </div>
     </div>
   </form>
@@ -30,7 +32,11 @@
   <main>
     <div class="box">
       <div class="box-side" v-for="face in structure" :class="face.side" :key="face.side" :style="'grid-template-columns: repeat('+face.cols+', 1fr)'">
-        <div class="box-face" v-for="face in face.count" :key="face.side"></div>
+        <div class="box-block" v-for="(block, index) in face.count" :key="index" :class="{ 'last': face.count - index > face.count - face.cols }">
+          <div v-if="face.side !== 'top'" class="box-block-col right"/>
+          <div v-if="face.side !== 'top'" class="box-block-face"/>
+          <div v-if="face.side !== 'top'" class="box-block-col left"/>
+        </div>
       </div>
     </div>
   </main>
@@ -89,19 +95,17 @@
   $text-color: white;
 
   :root {
-    --box-width: 16px;
-    --box-height: 30px;
-    --grid-border-width: 1px;
+    --block-width: 20px;
+    --block-col-width: 4px;
+    --block-face-width: calc(var(--block-width) - var(--block-col-width));
+    --block-height: 30px;
+    --floor-size: var(--block-width);
+    --grid-border-width: 0px;
   }
 
   body {
     background-color: $background-color;
     display: flex;
-  }
-
-  main {
-    display: flex;
-    height: 100%;
   }
 
   html, body {
@@ -111,6 +115,31 @@
     justify-content: center;
     font-family: sans-serif;
     color: $text-color;
+  }
+
+  .center {
+    pointer-events: none;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    z-index: 1;
+    opacity: .25;
+
+    &:before, &:after {
+      content: '';
+      position: absolute;
+      left: 0;
+      width: 100%;
+      top: 50%;
+      transform: translateY(-50%);
+      height: 1px;
+      background-color: $text-color;
+    }
+    &:after {
+      transform: translateY(-50%) rotate(90deg);
+    }
   }
 
   .form {
@@ -162,6 +191,7 @@
           border: 0;
           font-size: 1.2em;
           color: rgba($text-color, .65);
+          cursor: pointer;
 
           &.plus {
             grid-area: 1 / 3 / 2 / 4;
@@ -172,6 +202,11 @@
             grid-area: 2 / 3 / 3 / 4;
             background-color: rgba($text-color,.12);
           }
+
+          &:hover {
+            background-color: rgba($text-color,.20);
+            color: $text-color;
+          }
         }
       }
     }
@@ -179,6 +214,7 @@
 
   .box {
     position: relative;
+    transform: scale(2);
 
     &-side {
       position: absolute;
@@ -188,22 +224,22 @@
       border: var(--grid-border-width) solid $text-color;
 
       &.width {
-        right: 0;
+        right: 50%;
         transform-origin: 100% 0;
         transform: perspective(700px)
         skew(0deg,30deg);
       }
 
       &.depth {
-        left: -1px;
+        left: calc(50% - 1px);
         transform-origin: 0 0;
         transform: perspective(700px)
         skew(0deg,-30deg);
       }
 
       &.top {
-        right: 0;
-        bottom: -1px;
+        right: 50%;
+        bottom: calc(100% - 1px);
         transform-origin: 100% 100%;
         transform: rotate(30deg)
         scaleX(1.16)
@@ -211,12 +247,37 @@
       }
     }
 
-    &-face {
-      width: var(--box-width);
-      height: var(--box-height);
+    &-block {
+      width: var(--block-width);
+      height: var(--block-height);
       position: relative;
       background-color: $background-color;
-      .top & { height: var(--box-width) }
+
+      .width &, .depth & {
+        display: flex;
+      }
+
+      .top & {
+        height: var(--floor-size);
+        background-image: url('/images/floor.png');
+        background-size: 100% 100%;
+      }
+
+      &-col {
+        width: calc(var(--block-col-width) / 2);
+        height: 100%;
+        flex-shrink: 0;
+        background-image: url('/images/column.png');
+        background-size: 200% 100%;
+        &.right { background-position: 0 0 }
+        &.left { background-position: 100% 0 }
+      }
+
+      &-face {
+        flex: 1;
+        background-image: url('/images/face.png');
+        background-size: 100% 100%;
+      }
     }
   }
 </style>
