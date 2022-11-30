@@ -44,7 +44,7 @@
 
 <script>
 
-  import { ref } from "vue"
+import { ref, watch } from "vue"
 
   export default {
 
@@ -55,6 +55,21 @@
       const width = ref(4)
       const depth = ref(2)
       const height = ref(4)
+
+      watch(width, () => {
+        if (width.value <= 1) width.value = 1
+        else if (width.value >= 6) width.value = 6
+      })
+
+      watch(depth, () => {
+        if (depth.value <= 1) depth.value = 1
+        else if (depth.value >= 6) depth.value = 6
+      })
+
+      watch(height, () => {
+        if (height.value <= 1) height.value = 2
+        else if (height.value >= 6) height.value = 6
+      })
 
       return {
         width,
@@ -98,7 +113,7 @@
         ]
       }
     },
-    watch: {
+    /*watch: {
       width(value) {
         if (value <= 1) this.width = 1
         else if (value >= 6) this.width = 6
@@ -111,7 +126,7 @@
         if (value <= 1) this.height = 2
         else if (value >= 6) this.height = 6
       }
-    }
+    }*/
   }
 </script>
 
