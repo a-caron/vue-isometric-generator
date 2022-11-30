@@ -29,8 +29,8 @@
 
   <main>
     <div class="box">
-      <div class="box-side" v-for="side in ['left','right','top']" :class="side" :key="side">
-        <div class="box-face" v-for="face in 12" :key="face"></div>
+      <div class="box-side" v-for="face in structure" :class="face.side" :key="face.side" :style="'grid-template-columns: repeat('+face.cols+', 1fr)'">
+        <div class="box-face" v-for="face in face.count" :key="face.side"></div>
       </div>
     </div>
   </main>
@@ -40,9 +40,30 @@
   export default {
     data() {
       return {
-        width: 3,
-        depth: 3,
-        height: 3,
+        width: 4,
+        depth: 2,
+        height: 4
+      }
+    },
+    computed: {
+      structure() {
+        return [
+          {
+            side: 'width',
+            cols: this.width,
+            count: this.width * this.height
+          },
+          {
+            side: 'depth',
+            cols: this.depth,
+            count: this.depth * this.height
+          },
+          {
+            side: 'top',
+            cols: this.width,
+            count: this.width * this.depth
+          }
+        ]
       }
     },
     watch: {
@@ -64,12 +85,23 @@
 
 <style lang="scss">
 
+  $background-color: #727272;
+  $text-color: white;
+
   :root {
-    --background-color: #151515;
     --box-width: 16px;
     --box-height: 30px;
     --grid-border-width: 1px;
-    --grid-border-color: #2c2c2c;
+  }
+
+  body {
+    background-color: $background-color;
+    display: flex;
+  }
+
+  main {
+    display: flex;
+    height: 100%;
   }
 
   html, body {
@@ -78,13 +110,13 @@
     align-items: center;
     justify-content: center;
     font-family: sans-serif;
-    color: white;
+    color: $text-color;
   }
 
   .form {
     --input-size: 40px;
     position: absolute;
-    font-size: 15px;
+    font-size: 16px;
     left: 2em;
     top: 2em;
 
@@ -101,8 +133,8 @@
       padding-right: 1em;
       display: flex;
       align-items: center;
-      opacity: .65;
       font-weight: 100;
+      opacity: .85;
     }
 
     &-input {
@@ -114,7 +146,7 @@
       height: calc(var(--size) * 2);
       grid-column-gap: 0;
       grid-row-gap: 0;
-      background-color: rgba(white,.065);
+      background-color: rgba($text-color,.06);
 
       &-block {
         display: flex;
@@ -128,31 +160,21 @@
 
         &.button {
           border: 0;
-          color: inherit;
           font-size: 1.2em;
+          color: rgba($text-color, .65);
 
           &.plus {
             grid-area: 1 / 3 / 2 / 4;
-            background-color: rgba(white,.065);
+            background-color: rgba($text-color,.06);
           }
 
           &.minus {
             grid-area: 2 / 3 / 3 / 4;
-            background-color: rgba(white,.13);
+            background-color: rgba($text-color,.12);
           }
         }
       }
     }
-  }
-
-  body {
-    background-color: var(--background-color);
-    display: flex;
-  }
-
-  main {
-    display: flex;
-    height: 100%;
   }
 
   .box {
@@ -161,21 +183,31 @@
     &-side {
       position: absolute;
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
       grid-gap: var(--grid-border-width);
-      background: var(--grid-border-color);
-      border: var(--grid-border-width) solid var(--grid-border-color);
+      background: $text-color;
+      border: var(--grid-border-width) solid $text-color;
 
-      &.left {
-        transform: perspective(700px) skew(0deg,25deg) translateX(-50%);
+      &.width {
+        right: 0;
+        transform-origin: 100% 0;
+        transform: perspective(700px)
+        skew(0deg,30deg);
       }
 
-      &.right {
-        transform: perspective(700px) skew(0deg,-25deg) translateX(50%);
+      &.depth {
+        left: -1px;
+        transform-origin: 0 0;
+        transform: perspective(700px)
+        skew(0deg,-30deg);
       }
 
       &.top {
-        transform: perspective(700px) rotate(315deg) skew(20deg,20deg) scale(1.05) translate(calc(100% + 1px),calc(-100% - 1px));
+        right: 0;
+        bottom: -1px;
+        transform-origin: 100% 100%;
+        transform: rotate(30deg)
+        scaleX(1.16)
+        skew(-26deg);
       }
     }
 
@@ -183,7 +215,7 @@
       width: var(--box-width);
       height: var(--box-height);
       position: relative;
-      background-color: var(--background-color);
+      background-color: $background-color;
       .top & { height: var(--box-width) }
     }
   }
