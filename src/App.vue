@@ -1,6 +1,6 @@
 <template>
 
-  <div class="center"/>
+  <!--<div class="center"/>-->
 
   <form class="form">
     <div class="form-group">
@@ -31,11 +31,11 @@
 
   <main>
     <div class="box">
-      <div class="box-side" v-for="face in structure" :class="face.side" :key="face.side" :style="'grid-template-columns: repeat('+face.cols+', 1fr)'">
+      <div class="box-side" v-for="face in structure" :class="face.side" :key="face.side" :style="'grid-template-columns: repeat('+face.cols+', 1fr);' + (face.side === 'bottom' ? 'bottom: calc(var(--block-height) * ' + -height + ')' : '')">
         <div class="box-block" v-for="(block, index) in face.count" :key="index" :class="{ 'last': face.count - index > face.count - face.cols }">
-          <div v-if="face.side !== 'top'" class="box-block-col right"/>
-          <div v-if="face.side !== 'top'" class="box-block-face"/>
-          <div v-if="face.side !== 'top'" class="box-block-col left"/>
+          <div v-if="face.side !== 'top' && face.side !== 'bottom'" class="box-block-col right"/>
+          <div v-if="face.side !== 'top' && face.side !== 'bottom'" class="box-block-face"/>
+          <div v-if="face.side !== 'top' && face.side !== 'bottom'" class="box-block-col left"/>
         </div>
       </div>
     </div>
@@ -66,6 +66,11 @@
           },
           {
             side: 'top',
+            cols: this.width,
+            count: this.width * this.depth
+          },
+          {
+            side: 'bottom',
             cols: this.width,
             count: this.width * this.depth
           }
@@ -134,7 +139,7 @@
       width: 100%;
       top: 50%;
       transform: translateY(-50%);
-      height: 1px;
+      height: var(--grid-border-width);
       background-color: $text-color;
     }
     &:after {
@@ -214,13 +219,12 @@
 
   .box {
     position: relative;
-    transform: scale(2);
+    transform: scale(1.75);
 
     &-side {
       position: absolute;
       display: grid;
       grid-gap: var(--grid-border-width);
-      background: $text-color;
       border: var(--grid-border-width) solid $text-color;
 
       &.width {
@@ -231,19 +235,30 @@
       }
 
       &.depth {
-        left: calc(50% - 1px);
+        left: calc(50% - var(--grid-border-width));
         transform-origin: 0 0;
         transform: perspective(700px)
         skew(0deg,-30deg);
       }
 
-      &.top {
-        right: 50%;
-        bottom: calc(100% - 1px);
+      &.top, &.bottom {
         transform-origin: 100% 100%;
+        bottom: calc(100% - var(--grid-border-width));
+        right: 50%;
         transform: rotate(30deg)
-        scaleX(1.16)
-        skew(-26deg);
+        scaleX(1.155)
+        skew(-26.5deg);
+      }
+
+      &.top {
+        bottom: calc(var(--floor-size) * -1.5);
+        z-index: -1;
+      }
+
+      &.bottom {
+        box-shadow: 0 0 7px 7px black, 0 0 20px 20px rgba(black,.7), 0 0 50px 50px rgba(black,.5);
+        opacity: .12;
+        z-index: -12;
       }
     }
 
@@ -257,26 +272,39 @@
         display: flex;
       }
 
-      .top & {
+      .top &, .bottom & {
         height: var(--floor-size);
+      }
+
+      .top & {
         background-image: url('/images/floor.png');
         background-size: 100% 100%;
+      }
+
+      .bottom & {
+        background-color: black;
+      }
+
+      &.last {
+        background-color: transparent;
       }
 
       &-col {
         width: calc(var(--block-col-width) / 2);
         height: 100%;
         flex-shrink: 0;
-        background-image: url('/images/column.png');
         background-size: 200% 100%;
-        &.right { background-position: 0 0 }
-        &.left { background-position: 100% 0 }
+        background-image: url('/images/column.png');
+        .last & { background-image: url('/images/column-last.png') }
+        &.right { background-position: 100% 0 }
+        &.left { background-position: 0 0 }
       }
 
       &-face {
         flex: 1;
-        background-image: url('/images/face.png');
         background-size: 100% 100%;
+        background-image: url('/images/face.png');
+        .last & { background-image: url('/images/face-last.png') }
       }
     }
   }
