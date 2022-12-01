@@ -31,7 +31,7 @@
 
   <main>
     <div class="box">
-      <div class="box-side" v-for="face in structure" :class="face.side" :key="face.side" :style="'grid-template-columns: repeat('+face.cols+', 1fr);' + (face.side === 'shadow' ? 'bottom: calc(var(--block-height) * ' + -houseHeight + ')' : '')">
+      <div class="box-side" v-for="face in structure" :class="face.side" :key="face.side" :style="face.style">
         <div class="box-block" v-for="(block, index) in face.count" :key="index" :class="{ 'last': face.count - index > face.count - face.cols }">
           <div v-if="face.side !== 'top' && face.side !== 'shadow'" class="box-block-col right"/>
           <div v-if="face.side !== 'top' && face.side !== 'shadow'" class="box-block-face"/>
@@ -54,19 +54,31 @@
     return [
       {
         side: 'left', cols: houseDepth.value,
-        count: houseDepth.value * houseHeight.value
+        count: houseDepth.value * houseHeight.value,
+        style: 'grid-template-columns: repeat('+houseDepth.value+', 1fr);'
       },
       {
         side: 'front', cols: houseWidth.value,
-        count: houseWidth.value * houseHeight.value
+        count: houseWidth.value * houseHeight.value,
+        style: 'grid-template-columns: repeat('+houseWidth.value+', 1fr);'
+      },
+      {
+        side: 'back', cols: houseWidth.value,
+        count: houseWidth.value * houseHeight.value,
+        style: 'grid-template-columns: repeat('+houseWidth.value+', 1fr);'
+             + 'left: calc(' + -houseDepth.value + ' * var(--block-width) - var(--grid-border-width));'
+             + 'transform-origin: calc(' + -houseDepth.value + ' * var(--block-width)) 0;'
       },
       {
         side: 'top', cols: houseDepth.value,
-        count: houseDepth.value * houseWidth.value
+        count: houseDepth.value * houseWidth.value,
+        style: 'grid-template-columns: repeat('+houseDepth.value+', 1fr);'
       },
       {
         side: 'shadow', cols: houseDepth.value,
-        count: houseDepth.value * houseWidth.value
+        count: houseDepth.value * houseWidth.value,
+        style: 'grid-template-columns: repeat('+houseDepth.value+', 1fr);'
+             + 'bottom: calc(var(--block-height) * ' + -houseHeight + ')'
       }
     ]
   })
@@ -222,11 +234,15 @@
         skew(0deg,30deg);
       }
 
-      &.front {
+      &.front, &.back {
         left: calc(50% - var(--grid-border-width));
         transform-origin: 0 0;
         transform: perspective(700px)
         skew(0deg,-30deg);
+      }
+
+      &.back {
+        z-index: -1;
       }
 
       &.top, &.shadow {
@@ -256,7 +272,7 @@
       position: relative;
       background-color: $background-color;
 
-      .left &, .front & {
+      .left &, .front &, .back & {
         display: flex;
       }
 
@@ -270,7 +286,7 @@
       }
 
       .shadow & {
-        background-color: black;
+        background-color: black !important;
       }
 
       &.last {
