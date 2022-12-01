@@ -42,91 +42,51 @@
   </main>
 </template>
 
-<script>
+<script setup>
 
-import { ref, watch } from "vue"
+  import { ref, watch, computed } from 'vue'
 
-  export default {
+  const width = ref(4)
+  const depth = ref(2)
+  const height = ref(4)
 
-    /* composition*/
-
-    setup() {
-
-      const width = ref(4)
-      const depth = ref(2)
-      const height = ref(4)
-
-      watch(width, () => {
-        if (width.value <= 1) width.value = 1
-        else if (width.value >= 6) width.value = 6
-      })
-
-      watch(depth, () => {
-        if (depth.value <= 1) depth.value = 1
-        else if (depth.value >= 6) depth.value = 6
-      })
-
-      watch(height, () => {
-        if (height.value <= 1) height.value = 2
-        else if (height.value >= 6) height.value = 6
-      })
-
-      return {
-        width,
-        depth,
-        height
-      }
-    },
-
-    /* option */
-
-    /*data() {
-      return {
-        width: 4,
-        depth: 2,
-        height: 4
-      }
-    },*/
-    computed: {
-      structure() {
-        return [
-          {
-            side: 'width',
-            cols: this.width,
-            count: this.width * this.height
-          },
-          {
-            side: 'depth',
-            cols: this.depth,
-            count: this.depth * this.height
-          },
-          {
-            side: 'top',
-            cols: this.width,
-            count: this.width * this.depth
-          },
-          {
-            side: 'bottom',
-            cols: this.width,
-            count: this.width * this.depth
-          }
-        ]
-      }
-    },
-    /*watch: {
-      width(value) {
-        if (value <= 1) this.width = 1
-        else if (value >= 6) this.width = 6
+  const structure = computed(() => {
+    return [
+      {
+        side: 'width', cols: width.value,
+        count: width.value * height.value
       },
-      depth(value) {
-        if (value <= 1) this.depth = 1
-        else if (value >= 6) this.depth = 6
+      {
+        side: 'depth', cols: depth.value,
+        count: depth.value * height.value
       },
-      height(value) {
-        if (value <= 1) this.height = 2
-        else if (value >= 6) this.height = 6
+      {
+        side: 'top', cols: width.value,
+        count: width.value * depth.value
+      },
+      {
+        side: 'bottom', cols: width.value,
+        count: width.value * depth.value
       }
-    }*/
+    ]
+  })
+
+  watch(width, () => {
+    width.value = countMinMax(width.value, 1, 6)
+  })
+
+  watch(depth, () => {
+    depth.value = countMinMax(depth.value, 1, 6)
+  })
+
+  watch(height, () => {
+    height.value = countMinMax(height.value, 2, 6)
+  })
+
+  function countMinMax(value, min, max) {
+    if (value <= 1) value = min
+    else if (value >= max) value = max
+    return value
   }
 </script>
 
