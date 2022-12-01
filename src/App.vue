@@ -4,38 +4,38 @@
 
   <form class="form">
     <div class="form-group">
-      <label class="form-label" v-text="'width'"/>
+      <label class="form-label" v-text="'depth'"/>
       <div class="form-input">
-        <div class="form-input-block number" v-text="width"/>
-        <button class="form-input-block button plus" @click.prevent="width++" v-text="'+'"/>
-        <button class="form-input-block button minus" @click.prevent="width--" v-text="'-'"/>
+        <div class="form-input-block number" v-text="houseDepth"/>
+        <button class="form-input-block button plus" @click.prevent="houseDepth++" v-text="'+'"/>
+        <button class="form-input-block button minus" @click.prevent="houseDepth--" v-text="'-'"/>
       </div>
     </div>
     <div class="form-group">
-      <label class="form-label" v-text="'depth'"/>
+      <label class="form-label" v-text="'width'"/>
       <div class="form-input">
-        <div class="form-input-block number" v-text="depth"/>
-        <button class="form-input-block button plus" @click.prevent="depth++" v-text="'+'"/>
-        <button class="form-input-block button minus" @click.prevent="depth--" v-text="'-'"/>
+        <div class="form-input-block number" v-text="houseWidth"/>
+        <button class="form-input-block button plus" @click.prevent="houseWidth++" v-text="'+'"/>
+        <button class="form-input-block button minus" @click.prevent="houseWidth--" v-text="'-'"/>
       </div>
     </div>
     <div class="form-group">
       <label class="form-label" v-text="'height'"/>
       <div class="form-input">
-        <div class="form-input-block number" v-text="height"/>
-        <button class="form-input-block button plus" @click.prevent="height++" v-text="'+'"/>
-        <button class="form-input-block button minus" @click.prevent="height--" v-text="'-'"/>
+        <div class="form-input-block number" v-text="houseHeight"/>
+        <button class="form-input-block button plus" @click.prevent="houseHeight++" v-text="'+'"/>
+        <button class="form-input-block button minus" @click.prevent="houseHeight--" v-text="'-'"/>
       </div>
     </div>
   </form>
 
   <main>
     <div class="box">
-      <div class="box-side" v-for="face in structure" :class="face.side" :key="face.side" :style="'grid-template-columns: repeat('+face.cols+', 1fr);' + (face.side === 'bottom' ? 'bottom: calc(var(--block-height) * ' + -height + ')' : '')">
+      <div class="box-side" v-for="face in structure" :class="face.side" :key="face.side" :style="'grid-template-columns: repeat('+face.cols+', 1fr);' + (face.side === 'shadow' ? 'bottom: calc(var(--block-height) * ' + -houseHeight + ')' : '')">
         <div class="box-block" v-for="(block, index) in face.count" :key="index" :class="{ 'last': face.count - index > face.count - face.cols }">
-          <div v-if="face.side !== 'top' && face.side !== 'bottom'" class="box-block-col right"/>
-          <div v-if="face.side !== 'top' && face.side !== 'bottom'" class="box-block-face"/>
-          <div v-if="face.side !== 'top' && face.side !== 'bottom'" class="box-block-col left"/>
+          <div v-if="face.side !== 'top' && face.side !== 'shadow'" class="box-block-col right"/>
+          <div v-if="face.side !== 'top' && face.side !== 'shadow'" class="box-block-face"/>
+          <div v-if="face.side !== 'top' && face.side !== 'shadow'" class="box-block-col left"/>
         </div>
       </div>
     </div>
@@ -46,42 +46,34 @@
 
   import { ref, watch, computed } from 'vue'
 
-  const width = ref(4)
-  const depth = ref(2)
-  const height = ref(4)
+  const houseDepth = ref(4)
+  const houseWidth = ref(2)
+  const houseHeight = ref(4)
 
   const structure = computed(() => {
     return [
       {
-        side: 'width', cols: width.value,
-        count: width.value * height.value
+        side: 'left', cols: houseDepth.value,
+        count: houseDepth.value * houseHeight.value
       },
       {
-        side: 'depth', cols: depth.value,
-        count: depth.value * height.value
+        side: 'front', cols: houseWidth.value,
+        count: houseWidth.value * houseHeight.value
       },
       {
-        side: 'top', cols: width.value,
-        count: width.value * depth.value
+        side: 'top', cols: houseDepth.value,
+        count: houseDepth.value * houseWidth.value
       },
       {
-        side: 'bottom', cols: width.value,
-        count: width.value * depth.value
+        side: 'shadow', cols: houseDepth.value,
+        count: houseDepth.value * houseWidth.value
       }
     ]
   })
 
-  watch(width, () => {
-    width.value = countMinMax(width.value, 1, 6)
-  })
-
-  watch(depth, () => {
-    depth.value = countMinMax(depth.value, 1, 6)
-  })
-
-  watch(height, () => {
-    height.value = countMinMax(height.value, 2, 6)
-  })
+  watch(houseDepth, () => houseDepth.value = countMinMax(houseDepth.value, 1, 6))
+  watch(houseWidth, () => houseWidth.value = countMinMax(houseWidth.value, 1, 6))
+  watch(houseHeight, () => houseHeight.value = countMinMax(houseHeight.value, 2, 6))
 
   function countMinMax(value, min, max) {
     if (value <= 1) value = min
@@ -223,21 +215,21 @@
       grid-gap: var(--grid-border-width);
       border: var(--grid-border-width) solid $text-color;
 
-      &.width {
+      &.left {
         right: 50%;
         transform-origin: 100% 0;
         transform: perspective(700px)
         skew(0deg,30deg);
       }
 
-      &.depth {
+      &.front {
         left: calc(50% - var(--grid-border-width));
         transform-origin: 0 0;
         transform: perspective(700px)
         skew(0deg,-30deg);
       }
 
-      &.top, &.bottom {
+      &.top, &.shadow {
         transform-origin: 100% 100%;
         bottom: calc(100% - var(--grid-border-width));
         right: 50%;
@@ -251,7 +243,7 @@
         z-index: -1;
       }
 
-      &.bottom {
+      &.shadow {
         box-shadow: 0 0 7px 7px black, 0 0 20px 20px rgba(black,.7), 0 0 50px 50px rgba(black,.5);
         opacity: .12;
         z-index: -12;
@@ -264,11 +256,11 @@
       position: relative;
       background-color: $background-color;
 
-      .width &, .depth & {
+      .left &, .front & {
         display: flex;
       }
 
-      .top &, .bottom & {
+      .top &, .shadow & {
         height: var(--floor-size);
       }
 
@@ -277,7 +269,7 @@
         background-size: 100% 100%;
       }
 
-      .bottom & {
+      .shadow & {
         background-color: black;
       }
 
