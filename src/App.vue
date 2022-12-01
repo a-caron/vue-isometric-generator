@@ -58,6 +58,13 @@
         style: 'grid-template-columns: repeat('+houseDepth.value+', 1fr);'
       },
       {
+        side: 'right', cols: houseDepth.value,
+        count: houseDepth.value * houseHeight.value,
+        style: 'grid-template-columns: repeat('+houseDepth.value+', 1fr);'
+            + 'right: calc(' + -houseWidth.value + ' * var(--block-width) - var(--grid-border-width));'
+            + 'transform-origin: calc(' + 6 + ' * var(--block-width)) 0;'
+      },
+      {
         side: 'front', cols: houseWidth.value,
         count: houseWidth.value * houseHeight.value,
         style: 'grid-template-columns: repeat('+houseWidth.value+', 1fr);'
@@ -227,12 +234,16 @@
       grid-gap: var(--grid-border-width);
       border: var(--grid-border-width) solid $text-color;
 
-      &.left {
+      &.left, &.right {
         right: 50%;
         transform-origin: 100% 0;
         transform: perspective(700px)
         skew(0deg,30deg);
       }
+
+      /*&.right {
+        z-index: -2;
+      }*/
 
       &.front, &.back {
         left: calc(50% - var(--grid-border-width));
@@ -272,7 +283,7 @@
       position: relative;
       background-color: $background-color;
 
-      .left &, .front &, .back & {
+      .left &, .front &, .back &, .right & {
         display: flex;
       }
 
