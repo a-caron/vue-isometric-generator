@@ -238,7 +238,7 @@
         right: 50%;
         transform-origin: 100% 0;
         transform: perspective(700px)
-        skew(0deg,30deg);
+        skew(0deg, 30deg);
       }
 
       &.right { filter: brightness(80%) }
