@@ -241,17 +241,9 @@
         skew(0deg,30deg);
       }
 
-      &.right {
-        filter: brightness(80%);
-      }
-
-      &.back, &.left {
-        filter: brightness(70%);
-      }
-
-      &.left {
-        z-index: -2;
-      }
+      &.right { filter: brightness(80%) }
+      &.back, &.left { filter: brightness(70%) }
+      &.left { z-index: -2 }
 
       &.front, &.back {
         left: calc(50% - var(--grid-border-width));
