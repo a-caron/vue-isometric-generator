@@ -46,9 +46,9 @@
 
   import { ref, watch, computed } from 'vue'
 
-  const houseDepth = ref(4)
-  const houseWidth = ref(2)
-  const houseHeight = ref(4)
+  const houseDepth = ref(1)
+  const houseWidth = ref(6)
+  const houseHeight = ref(2)
 
   const structure = computed(() => {
     return [
@@ -56,13 +56,13 @@
         side: 'left', cols: houseDepth.value,
         count: houseDepth.value * houseHeight.value,
         style: 'grid-template-columns: repeat('+houseDepth.value+', 1fr);'
+             + 'right: calc(' + -houseWidth.value + ' * var(--block-width) - var(--grid-border-width));'
+             + 'top: calc(' + -houseWidth.value + ' * (var(--block-height) / 2.6));'
       },
       {
         side: 'right', cols: houseDepth.value,
         count: houseDepth.value * houseHeight.value,
         style: 'grid-template-columns: repeat('+houseDepth.value+', 1fr);'
-            + 'right: calc(' + -houseWidth.value + ' * var(--block-width) - var(--grid-border-width));'
-            + 'transform-origin: calc(' + 6 + ' * var(--block-width)) 0;'
       },
       {
         side: 'front', cols: houseWidth.value,
@@ -85,7 +85,7 @@
         side: 'shadow', cols: houseDepth.value,
         count: houseDepth.value * houseWidth.value,
         style: 'grid-template-columns: repeat('+houseDepth.value+', 1fr);'
-             + 'bottom: calc(var(--block-height) * ' + -houseHeight + ')'
+             + 'bottom: calc(var(--block-height) * ' + -houseHeight.value + ')'
       }
     ]
   })
@@ -241,9 +241,17 @@
         skew(0deg,30deg);
       }
 
-      /*&.right {
+      &.right {
+        filter: brightness(80%);
+      }
+
+      &.back, &.left {
+        filter: brightness(70%);
+      }
+
+      &.left {
         z-index: -2;
-      }*/
+      }
 
       &.front, &.back {
         left: calc(50% - var(--grid-border-width));
